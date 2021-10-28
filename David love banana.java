@@ -39,22 +39,20 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+
 /**
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a
- * 'program' that runs in either the autonomous or the teleop period of an FTC
- * match. The names of OpModes appear on the menu of the FTC Driver Station.
- * When an selection is made from the menu, the corresponding OpMode class is
- * instantiated on the Robot Controller and executed.
+ * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
+ * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
+ * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
+ * class is instantiated on the Robot Controller and executed.
  *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two
- * wheeled robot It includes all the skeletal structure that all linear OpModes
- * contain.
+ * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
+ * It includes all the skeletal structure that all linear OpModes contain.
  *
- * Use Android Studios to Copy this Class, and Paste it into your team's code
- * folder with a new name. Remove or comment out the @Disabled line to add this
- * opmode to the Driver Station OpMode list
+ * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@TeleOp(name = "Basic: Linear OpMode", group = "Linear Opmode")
+@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
 
 public class Test2 extends LinearOpMode {
 
@@ -72,26 +70,25 @@ public class Test2 extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // Initialize the hardware variables. Note that the strings used here as
-        // parameters
+        // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive = hardwareMap.get(DcMotor.class, "motor1");
+        leftDrive  = hardwareMap.get(DcMotor.class, "motor1");
         rightDrive = hardwareMap.get(DcMotor.class, "motor3");
-        leftDrive2 = hardwareMap.get(DcMotor.class, "motor2");
+        leftDrive2  = hardwareMap.get(DcMotor.class, "motor2");
         rightDrive2 = hardwareMap.get(DcMotor.class, "motor4");
         Craw = hardwareMap.get(DcMotor.class, "motor5");
         servo0 = hardwareMap.get(Servo.class, "Servo");
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftDrive2.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive2.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive2.setDirection(DcMotor.Direction.FORWARD);
+        rightDrive2.setDirection(DcMotor.Direction.REVERSE);
         // set 0 power behavior for Craw
         Craw.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // end
-
+        //end
+        
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -102,54 +99,63 @@ public class Test2 extends LinearOpMode {
             // Setup a variable for each drive wheel to save power level for telemetry
             double leftPower;
             double rightPower;
-            // Caleb: double servoPower;
+            //Caleb: double servoPower;
             // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used. The default below is POV.
+            // Comment out the method that's not used.  The default below is POV.
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-
-            leftPower = 1.0;
-            rightPower = 1.0;
-            // Caleb servoPower = 0.1;
+           
+            leftPower    =  1.0;
+            rightPower   =  1.0;
+            //Caleb servoPower   =  0.1;
             // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep
-            // straight.
-            double y = gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x * 1.1;
-            double rx = gamepad1.right_stick_x;
+            // - This requires no math, but it is hard to drive forward slowly and keep straight.
+            double y = gamepad1.left_stick_y/2;
+            double rx = (gamepad1.left_stick_x * 1.1)/2 ;
+            double x  = gamepad1.right_stick_x/2;
             double crawmove = gamepad1.right_stick_y;
             // Changed t to right stick button
-            double you = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double fl = (y + x + rx) / you;
-            double bl = (y - x + rx) / you;
-            double fr = (y - x - rx) / you;
-            double br = (y + x - rx) / you;
+            double you = Math.max(Math.abs(y)+Math.abs(x)+Math.abs(rx), 1);
+            double fl = (y + x +rx)/you;
+            double bl = (y - x + rx)/you;
+            double fr = (y - x -rx)/you;
+            double br = (y + x -rx)/you;
             leftDrive.setPower(fl);
             rightDrive.setPower(bl);
             leftDrive2.setPower(fr);
             rightDrive2.setPower(br);
-
-            boolean t = gamepad1.right_stick_button;
+            
+            boolean t = gamepad1.x;
+            boolean h = gamepad1.b;
             int rightturn = 1;
             int leftturn = 1;
             String s = "1";
-            leftPower = y / 2;
-            rightPower = x / 2;
+            leftPower    = y/2 ;
+            rightPower   = x/2;
+            
 
-            if (t == true) {
+            if (t == true){
                 servo0.setPosition(-0.4);
-            } else {
+            }
+            if(h==true){ 
                 servo0.setPosition(1.0);
             }
-
-            // dont set following to high value
-            Craw.setPower(crawmove / 2.1);
+            h = t;
+            
+            double c = 2.1;
+            if (gamepad1.right_stick_button == true){
+                c = 1.5;
+            }
+           // dont set following to high value
+            Craw.setPower(crawmove/c);
+            
+            
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            // telemetry.addData("Status (%.2f)" + rightturn);
+            telemetry.addData("Motors", "left (%.2f), right (%.2f) (%.2f)", leftPower, rightPower, c);
+            //telemetry.addData("Status (%.2f)" + rightturn);
             telemetry.update();
         }
     }
