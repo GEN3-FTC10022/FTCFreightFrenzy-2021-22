@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,18 +11,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 //import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.teamcode.Util.Subsystem;
+//import org.firstinspires.ftc.teamcode.Util.Subsystem;
 
-public class drivetrain extends Subsystem{
+public class Drivetrain {
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor FlDrive = null;
-    private DcMotor FrDrive = null;
-    private DcMotor BlDrive = null;
-    private DcMotor BrDrive = null;
-    private DcMotor Craw = null;
-    private Servo servo0 = null;
-
-    public void setup() {
+    public static DcMotor FlDrive = null;
+    public static DcMotor FrDrive = null;
+    public static DcMotor BlDrive = null;
+    public static DcMotor BrDrive = null;
+    public static DcMotor Craw = null;
+    public static Servo servo0 = null;
+    
+    
+    public static void setup(HardwareMap hardwareMap) {
         FlDrive  = hardwareMap.get(DcMotor.class, "Fl");
         FrDrive = hardwareMap.get(DcMotor.class, "Fr");
         BlDrive  = hardwareMap.get(DcMotor.class, "Bl");
@@ -35,7 +36,7 @@ public class drivetrain extends Subsystem{
         FrDrive.setDirection(DcMotor.Direction.FORWARD);
         BlDrive.setDirection(DcMotor.Direction.REVERSE);
     }
-    public void move(double y, double x, double rx){
+    public static void move(double y, double x, double rx){
         double max = Math.max(Math.abs(y)+Math.abs(x)+Math.abs(rx), 1);
         double fl = (y + x +rx)/max;
         double bl = (y - x + rx)/max;
@@ -46,7 +47,7 @@ public class drivetrain extends Subsystem{
         FrDrive.setPower(fr);
         BrDrive.setPower(br);
     }
-    public void intake(boolean open, boolean close){
+    public static void intake(boolean open, boolean close, boolean pad, double crawmove){
         
         if (open == true){
             servo0.setPosition(-0.4);
@@ -55,22 +56,22 @@ public class drivetrain extends Subsystem{
             servo0.setPosition(1.0);
         }              
         double power = 1.8;
-        if (gamepad1.right_stick_button == true){
-            c = c - 0.3;
+        if (pad == true){
+            power = 0.3;
         }
        // dont set following to high val 
-        Craw.setPower(crawmove/c);
+        Craw.setPower(crawmove/power);
     }
-    public void SetMotorPower(double angle, double rotate){
+    public static void SetMotorPower(double angle, double rotate){
         double rad  = Math.toRadians(angle);
         double x = Math.cos(rad);
         double y = Math.sin(rad);
         move(y, x, rotate);
     }
     private static boolean Busy() {
-        return fl.isBusy() && bl.isBusy() && fr.isBusy() && br.isBusy();
+        return FlDrive.isBusy() && BlDrive.isBusy() && FrDrive.isBusy() && BrDrive.isBusy();
     }
-    public void SetPosition(int dist, double angle, double rotate){
+    public static void SetPosition(int dist, double angle, double rotate){
         FrDrive.setTargetPosition(FrDrive.getCurrentPosition()+ dist);
         FlDrive.setTargetPosition(FlDrive.getCurrentPosition()+ dist);
         BrDrive.setTargetPosition(BrDrive.getCurrentPosition()+ dist);
