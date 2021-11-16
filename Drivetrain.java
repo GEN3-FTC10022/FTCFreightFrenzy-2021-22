@@ -26,8 +26,64 @@ public abstract class Drivetrain extends Subsystem{
       BrDrive = hm.get(DcMotor.class, "Br");
       FlDrive.setDirection(DcMotor.Direction.REVERSE);
       BlDrive.setDirection(DcMotor.Direction.REVERSE);
+      tm.addLine("Drivetrain initialized");
+      tm.update();
       
   }
+  public static void move(double y, double x, double rx){
+        double max = Math.max(Math.abs(y)+Math.abs(x)+Math.abs(rx), 1);
+        double fl = (y + x +rx)/max;
+        double bl = (y - x + rx)/max;
+        double fr = (y - x -rx)/max;
+        double br = (y + x -rx)/max;
+        FlDrive.setPower(fl);
+        BlDrive.setPower(bl);
+        FrDrive.setPower(fr);
+        BrDrive.setPower(br);
+  }
+  public static void intake(boolean open, boolean close, boolean pad, double crawmove){
+        
+        if (open == true){
+            servo0.setPosition(-0.4);
+        }
+        if(close ==true){ 
+            servo0.setPosition(1.0);
+        }              
+        double power = 1.8;
+        if (pad == true){
+            power = 0.3;
+        }
+       // dont set following to high val 
+        Craw.setPower(crawmove/power);
+    }
+    public static void SetMotorPower(double angle, double rotate){
+        double rad  = Math.toRadians(angle);
+        double x = Math.cos(rad);
+        double y = Math.sin(rad);
+        move(y, x, rotate);
+    }
+    private static boolean Busy() {
+        return FlDrive.isBusy() && BlDrive.isBusy() && FrDrive.isBusy() && BrDrive.isBusy();
+    }
+    public static void SetPosition(int dist, double angle, double rotate){
+        FrDrive.setTargetPosition(FrDrive.getCurrentPosition()+ dist);
+        FlDrive.setTargetPosition(FlDrive.getCurrentPosition()+ dist);
+        BrDrive.setTargetPosition(BrDrive.getCurrentPosition()+ dist);
+        BlDrive.setTargetPosition(BlDrive.getCurrentPosition()+ dist);
+        
+        FrDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FlDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BrDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BlDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while(Busy()){
+            SetMotorPower(angle,rotate);
+        }
+
+
+    }
+  
+  
+  
   
   
     
