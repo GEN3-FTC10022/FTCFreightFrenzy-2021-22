@@ -12,14 +12,7 @@ public abstract class Subsystem {
     public static HardwareMap hm;
     public static Telemetry tm;
 
-    /**
-     * Sets the hardware map and telemetry objects to be used across all subsystems. This method
-     * should be called before any subclass is initialized and should not be called by any
-     * particular subclass. The hardware map and telemetry objects should be the same objects used
-     * within any OpMode.
-     * @param hardwareMap The hardware map to be used for device configuration for all subsystems.
-     * @param telemetry The telemetry to be used for logging for all subsystems.
-     */
+   
     public static void initialize(HardwareMap hardwareMap, Telemetry telemetry) {
         hm = hardwareMap;
         tm = telemetry;
