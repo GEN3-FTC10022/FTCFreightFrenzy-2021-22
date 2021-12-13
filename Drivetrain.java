@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Subsystem;
 public abstract class Drivetrain extends Subsystem{
   public static DcMotor FlDrive, FrDrive, BlDrive, BrDrive, Craw;
   
-  public static Servo servo0;
+  
   public static void initialize(){
       FlDrive = hm.get(DcMotor.class, "Fl");
       FrDrive = hm.get(DcMotor.class, "Fr");
@@ -28,8 +28,14 @@ public abstract class Drivetrain extends Subsystem{
       BlDrive.setDirection(DcMotor.Direction.REVERSE);
       
   } 
+  public static void AutoInitialize(){
+      FlDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      BlDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      FrDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      BrDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+  }
    public static void move(double y, double x, double rx){
-        double max = Math.max(Math.abs(y)+Math.abs(x)+Math.abs(rx), 1);
+        double max = Math.max(Math.abs(y)+Math.abs(x)+Math.abs(rx),1);
         double fl = (y + x +rx)/max;
         double bl = (y - x + rx)/max;
         double fr = (y - x -rx)/max;
@@ -40,11 +46,27 @@ public abstract class Drivetrain extends Subsystem{
         BrDrive.setPower(br);
     }
    
-    public static void SetMotorPower(double angle, double rotate){
+    public static void SetMotorPowerMove(double angle, double rotate){
         double rad  = Math.toRadians(angle);
         double x = Math.cos(rad);
         double y = Math.sin(rad);
-        move(y, x, rotate);
+        move(y/2, x/2, rotate);
+    }
+    public static void SetMotorPowerRotate(int dist, int angle){
+    //int dist, double angle,
+        FrDrive.setTargetPosition(FrDrive.getCurrentPosition()+ (dist* angle));
+        FlDrive.setTargetPosition(FlDrive.getCurrentPosition()- (dist* angle));
+        BrDrive.setTargetPosition(BrDrive.getCurrentPosition()+ (dist* angle));
+        BlDrive.setTargetPosition(BlDrive.getCurrentPosition()- (dist*angle));
+        
+        FrDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FlDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BrDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BlDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while(Busy()){
+        
+           move(0.0,0.0,angle);
+        }
     }
     private static boolean Busy() {
         return FlDrive.isBusy() && BlDrive.isBusy() && FrDrive.isBusy() && BrDrive.isBusy();
@@ -60,7 +82,9 @@ public abstract class Drivetrain extends Subsystem{
         BrDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         BlDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while(Busy()){
-            SetMotorPower(angle,rotate);
+        
+            SetMotorPowerMove(angle, rotate);
+            //SetMotorPowerRotate(rotate);
         }
 
 

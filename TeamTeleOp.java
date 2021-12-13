@@ -94,7 +94,7 @@ public class TeamTeleOp extends LinearOpMode {
         //end
         int tc = 0;
         int tdt = 0;
-        boolean kevin = false;
+        boolean kevin = true;
         double y = 0;
         double x = 0;
         double rx = 0;
@@ -151,17 +151,17 @@ public class TeamTeleOp extends LinearOpMode {
             rightPower   = x/2;
             
 
-            if(gamepad1.right_bumper && tc == 0){   
-                tc = 1;
-            }else if(!gamepad1.right_bumper && tc == 1){
-                servo0.setPosition(1);
-                tc = 2;
-            }else if(gamepad1.right_bumper && tc == 2){
-                tc = 3;
-            }else if(!gamepad1.right_bumper && tc ==3){
-                servo0.setPosition(0.4);
-                tc = 0;
+            if(gamepad1.right_bumper == true)
+            {
+            servo0.setPosition(0.4);
             }
+            if(gamepad1.left_bumper == true)
+            {
+            servo0.setPosition(3);
+            }
+            
+            
+            
             
             /*
             boolean lu = gamepad1.dpad_up;
@@ -179,7 +179,7 @@ public class TeamTeleOp extends LinearOpMode {
             */
             double c = gamepad1.right_trigger - gamepad1.left_trigger;
             
-            Craw.setPower((2*c)/3);
+            Craw.setPower(1.5*c);
             
 
             // Show the elapsed game time and wheel power.
@@ -189,4 +189,4 @@ public class TeamTeleOp extends LinearOpMode {
             telemetry.update();
         }
     }
-}
+    }
